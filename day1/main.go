@@ -1,33 +1,32 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 )
 
 func main() {
-	//The calibration values are the outer mose integers, will be pairs
-	//if only one integer, repeat to make the pair
-	//proof of concept based on the sample values
-	firstValue := "1abc2"
-	secondValue := "pqr3stu8vwx"
-	thirdValue := "a1b2c3d4e5f"
-	fourthValue := "treb7uchet"
+	file, err := os.Open("inputs.txt")
 
-	// split the strings into slices
-	firstValSlice := SplitStrings(firstValue)
-	secondValSlice := SplitStrings(secondValue)
-	thirdValSlice := SplitStrings(thirdValue)
-	fourthValSlice := SplitStrings(fourthValue)
+	if err != nil {
+		fmt.Println("Error opening file")
+		os.Exit(0)
+	}
 
-	// find the integers
-	firstInts := GetCalibrationInts(firstValSlice)
-	secondInts := GetCalibrationInts(secondValSlice)
-	thirdInts := GetCalibrationInts(thirdValSlice)
-	fourthInts := GetCalibrationInts(fourthValSlice)
+	defer file.Close()
 
-	totalSum := SumValue(firstInts) + SumValue(secondInts) + SumValue(thirdInts) + SumValue(fourthInts)
+	scanner := bufio.NewScanner(file)
+
+	var totalSum = 0
+
+	for scanner.Scan() {
+		currentSlice := SplitStrings(scanner.Text())
+		currentInts := GetCalibrationInts(currentSlice)
+		totalSum += SumValue(currentInts)
+	}
 
 	fmt.Println("The total sum is: ", totalSum)
 }
@@ -75,3 +74,6 @@ func SumValue(inStr string) int {
 		return int(result)
 	}
 }
+
+// Add a func to read the file line by line, then take each line through each of the
+// other funcs to get to the final integer and add to a runnint total sum
