@@ -9,6 +9,7 @@ import (
 func main() {
 	//The calibration values are the outer mose integers, will be pairs
 	//if only one integer, repeat to make the pair
+	//proof of concept based on the sample values
 	firstValue := "1abc2"
 	secondValue := "pqr3stu8vwx"
 	thirdValue := "a1b2c3d4e5f"
