@@ -74,6 +74,3 @@ func SumValue(inStr string) int {
 		return int(result)
 	}
 }
-
-// Add a func to read the file line by line, then take each line through each of the
-// other funcs to get to the final integer and add to a runnint total sum
