@@ -100,18 +100,19 @@ func PartOne() {
 		}
 	}
 
-	fmt.Println("seeds", seeds)
-	fmt.Println("seed to soil: ", seedtoSoil)
-	fmt.Println("soil to fertilizer: ", soiltoFertilizer)
-	fmt.Println("fertilizer to water: ", fertilizertoWater)
-	fmt.Println("water to light: ", watertoLight)
-	fmt.Println("light to temp: ", lighttoTemp)
-	fmt.Println("temp to humidity: ", temptoHumidity)
-	fmt.Println("humidity to location", humiditytoLocation)
+	//fmt.Println("seeds", seeds)
+	//fmt.Println("seed to soil: ", seedtoSoil)
+	//fmt.Println("soil to fertilizer: ", soiltoFertilizer)
+	//fmt.Println("fertilizer to water: ", fertilizertoWater)
+	//fmt.Println("water to light: ", watertoLight)
+	//fmt.Println("light to temp: ", lighttoTemp)
+	//fmt.Println("temp to humidity: ", temptoHumidity)
+	//fmt.Println("humidity to location", humiditytoLocation)
 
 	//Walk through the steps to get to the location for each seed.
 	for _, curSeed := range seeds.SeedNum {
 		fmt.Println("current seed num: ", curSeed)
+
 	}
 }
 
@@ -150,4 +151,8 @@ func ParseRange(inStr string) Range {
 	}
 
 	return curRange
+}
+
+func GetResult(inNum int, checkRange Range) {
+	//Determine rules for source to destination mapping here
 }
