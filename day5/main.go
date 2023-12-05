@@ -216,10 +216,6 @@ func PartTwo() {
 		fmt.Println(curSeedRange)
 		fmt.Println("Starting group number ", groupNum)
 
-		fmt.Println("Start num ", curSeedRange.StartNum)
-		fmt.Println("EndNum ", curSeedRange.StartNum+curSeedRange.Length)
-		fmt.Println("Range ", (curSeedRange.StartNum+curSeedRange.Length)-curSeedRange.StartNum)
-
 		for curSeedNum := curSeedRange.StartNum; curSeedNum < (curSeedRange.StartNum + curSeedRange.Length); curSeedNum++ {
 			//Seed to soil
 			soilNum := GetResult(curSeedNum, seedtoSoil)
@@ -310,7 +306,7 @@ func GetResult(inNum int, checkRanges []Range) int {
 	//looks like the difference between the incoming number and the start of the
 	//contained range affects the destination in the same way
 	for _, curRange := range checkRanges {
-		if inNum <= curRange.SourceStart+curRange.Length && inNum >= curRange.SourceStart {
+		if inNum < curRange.SourceStart+curRange.Length && inNum >= curRange.SourceStart {
 			retNum = curRange.DestinationStart + (inNum - curRange.SourceStart)
 			break
 		}
