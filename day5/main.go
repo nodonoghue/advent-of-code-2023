@@ -24,7 +24,7 @@ func main() {
 }
 
 func PartOne() {
-	file, err := os.Open("test.txt")
+	file, err := os.Open("inputs.txt")
 
 	//Declare needed structs
 	var seeds Seeds
@@ -100,20 +100,26 @@ func PartOne() {
 		}
 	}
 
-	//fmt.Println("seeds", seeds)
-	//fmt.Println("seed to soil: ", seedtoSoil)
-	//fmt.Println("soil to fertilizer: ", soiltoFertilizer)
-	//fmt.Println("fertilizer to water: ", fertilizertoWater)
-	//fmt.Println("water to light: ", watertoLight)
-	//fmt.Println("light to temp: ", lighttoTemp)
-	//fmt.Println("temp to humidity: ", temptoHumidity)
-	//fmt.Println("humidity to location", humiditytoLocation)
-
 	//Walk through the steps to get to the location for each seed.
+	location := 0
 	for _, curSeed := range seeds.SeedNum {
-		fmt.Println("current seed num: ", curSeed)
+		//Seed to soil
+		soilNum := GetResult(curSeed, seedtoSoil)
+		fertilizerNum := GetResult(soilNum, soiltoFertilizer)
+		waterNum := GetResult(fertilizerNum, fertilizertoWater)
+		lightNum := GetResult(waterNum, watertoLight)
+		tempNumber := GetResult(lightNum, lighttoTemp)
+		humidityNum := GetResult(tempNumber, temptoHumidity)
+		locationNum := GetResult(humidityNum, humiditytoLocation)
 
+		if location == 0 {
+			location = locationNum
+		} else if locationNum < location {
+			location = locationNum
+		}
 	}
+
+	fmt.Println("Closest location: ", location)
 }
 
 func GetSeedNums(inStr string) []int {
@@ -153,6 +159,21 @@ func ParseRange(inStr string) Range {
 	return curRange
 }
 
-func GetResult(inNum int, checkRange Range) {
+func GetResult(inNum int, checkRanges []Range) int {
+	retNum := 0
 	//Determine rules for source to destination mapping here
+	//looks like the difference between the incoming number and the start of the
+	//contained range affects the destination in the same way
+	for _, curRange := range checkRanges {
+		if inNum <= curRange.SourceStart+curRange.Length && inNum >= curRange.SourceStart {
+			retNum = curRange.DestinationStart + (inNum - curRange.SourceStart)
+			break
+		}
+	}
+
+	if retNum == 0 {
+		retNum = inNum
+	}
+
+	return retNum
 }
