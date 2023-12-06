@@ -111,10 +111,9 @@ func PartTwo() {
 }
 
 func BuildStructs(inFileName string) {
-	file, err := os.Open(inFileName)
-
 	var fileLocation string
 
+	file, err := os.Open(inFileName)
 	if err != nil {
 		fmt.Println("Error opening file")
 		os.Exit(0)
