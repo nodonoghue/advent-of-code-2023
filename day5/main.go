@@ -23,89 +23,32 @@ type Range struct {
 	Length           int
 }
 
+const constSeedtoSoil = "seed-to-soil"
+const constSoiltoFertilizer = "soil-to-fertilizer"
+const constFertilizertoWater = "fertilizer-to-water"
+const constWatertoLight = "water-to-light"
+const constLighttoTemp = "light-to-temperature"
+const constTemptoHumidity = "temperature-to-humidity"
+const constHumiditytoLoc = "humidity-to-location"
+
+var seeds Seeds
+var seedRanges []SeedRange
+var seedtoSoil []Range
+var soiltoFertilizer []Range
+var fertilizertoWater []Range
+var watertoLight []Range
+var lighttoTemp []Range
+var temptoHumidity []Range
+var humiditytoLocation []Range
+
 func main() {
 	fmt.Println("Advent of Code 2023 day 5")
+	BuildStructs("inputs.txt")
 	PartOne()
 	PartTwo()
 }
 
 func PartOne() {
-	file, err := os.Open("inputs.txt")
-
-	//Declare needed structs
-	var seeds Seeds
-	var seedtoSoil []Range
-	var soiltoFertilizer []Range
-	var fertilizertoWater []Range
-	var watertoLight []Range
-	var lighttoTemp []Range
-	var temptoHumidity []Range
-	var humiditytoLocation []Range
-	var fileLocation string
-
-	if err != nil {
-		fmt.Println("Error opening file")
-		os.Exit(0)
-	}
-
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-
-	for scanner.Scan() {
-		curLine := scanner.Text()
-		if len(curLine) > 0 {
-			if strings.Contains(curLine, "seeds") {
-				seeds.SeedNum = GetSeedNums(scanner.Text())
-			}
-			if strings.Contains(curLine, "seed-to-soil") {
-				fileLocation = "seed-to-soil"
-				continue
-			}
-			if strings.Contains(curLine, "soil-to-fertilizer") {
-				fileLocation = "soil-to-fertilizer"
-				continue
-			}
-			if strings.Contains(curLine, "fertilizer-to-water") {
-				fileLocation = "fertilizer-to-water"
-				continue
-			}
-			if strings.Contains(curLine, "water-to-light") {
-				fileLocation = "water-to-light"
-				continue
-			}
-			if strings.Contains(curLine, "light-to-temperature") {
-				fileLocation = "light-to-temperature"
-				continue
-			}
-			if strings.Contains(curLine, "temperature-to-humidity") {
-				fileLocation = "temperature-to-humidity"
-				continue
-			}
-			if strings.Contains(curLine, "humidity-to-location") {
-				fileLocation = "humidity-to-location"
-				continue
-			}
-
-			switch fileLocation {
-			case "seed-to-soil":
-				seedtoSoil = append(seedtoSoil, ParseRange(curLine))
-			case "soil-to-fertilizer":
-				soiltoFertilizer = append(soiltoFertilizer, ParseRange(curLine))
-			case "fertilizer-to-water":
-				fertilizertoWater = append(fertilizertoWater, ParseRange(curLine))
-			case "water-to-light":
-				watertoLight = append(watertoLight, ParseRange(curLine))
-			case "light-to-temperature":
-				lighttoTemp = append(lighttoTemp, ParseRange(curLine))
-			case "temperature-to-humidity":
-				temptoHumidity = append(temptoHumidity, ParseRange(curLine))
-			case "humidity-to-location":
-				humiditytoLocation = append(humiditytoLocation, ParseRange(curLine))
-			}
-		}
-	}
-
 	//Walk through the steps to get to the location for each seed.
 	location := 0
 	for _, curSeed := range seeds.SeedNum {
@@ -129,87 +72,13 @@ func PartOne() {
 }
 
 func PartTwo() {
-	file, err := os.Open("inputs.txt")
-
-	//Declare needed structs
-	var seedRanges []SeedRange
-	var seedtoSoil []Range
-	var soiltoFertilizer []Range
-	var fertilizertoWater []Range
-	var watertoLight []Range
-	var lighttoTemp []Range
-	var temptoHumidity []Range
-	var humiditytoLocation []Range
-	var fileLocation string
-
-	if err != nil {
-		fmt.Println("Error opening file")
-		os.Exit(0)
-	}
-
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-
-	for scanner.Scan() {
-		curLine := scanner.Text()
-		if len(curLine) > 0 {
-			if strings.Contains(curLine, "seeds") {
-				seedRanges = GetSeedRanges(scanner.Text())
-			}
-			if strings.Contains(curLine, "seed-to-soil") {
-				fileLocation = "seed-to-soil"
-				continue
-			}
-			if strings.Contains(curLine, "soil-to-fertilizer") {
-				fileLocation = "soil-to-fertilizer"
-				continue
-			}
-			if strings.Contains(curLine, "fertilizer-to-water") {
-				fileLocation = "fertilizer-to-water"
-				continue
-			}
-			if strings.Contains(curLine, "water-to-light") {
-				fileLocation = "water-to-light"
-				continue
-			}
-			if strings.Contains(curLine, "light-to-temperature") {
-				fileLocation = "light-to-temperature"
-				continue
-			}
-			if strings.Contains(curLine, "temperature-to-humidity") {
-				fileLocation = "temperature-to-humidity"
-				continue
-			}
-			if strings.Contains(curLine, "humidity-to-location") {
-				fileLocation = "humidity-to-location"
-				continue
-			}
-
-			switch fileLocation {
-			case "seed-to-soil":
-				seedtoSoil = append(seedtoSoil, ParseRange(curLine))
-			case "soil-to-fertilizer":
-				soiltoFertilizer = append(soiltoFertilizer, ParseRange(curLine))
-			case "fertilizer-to-water":
-				fertilizertoWater = append(fertilizertoWater, ParseRange(curLine))
-			case "water-to-light":
-				watertoLight = append(watertoLight, ParseRange(curLine))
-			case "light-to-temperature":
-				lighttoTemp = append(lighttoTemp, ParseRange(curLine))
-			case "temperature-to-humidity":
-				temptoHumidity = append(temptoHumidity, ParseRange(curLine))
-			case "humidity-to-location":
-				humiditytoLocation = append(humiditytoLocation, ParseRange(curLine))
-			}
-		}
-	}
-
 	//Walk through the steps to get to the location for each seed.
 	//locChannel := make(chan int)
 	//var wg sync.WaitGroup
 	var location int = 0
 	groupNum := 1
+
+	fmt.Println("Number of Iterations (rough): ", (405592018 + 27782252 + 61862174 + 181169206 + 138786487 + 275299008 + 478003391 + 6102091 + 15491453 + 546191739))
 	for _, curSeedRange := range seedRanges {
 		//go GetLocation(curSeedRange, seedtoSoil, soiltoFertilizer, fertilizertoWater, watertoLight, lighttoTemp, temptoHumidity, humiditytoLocation, locChannel)
 		//wg.Add(1)
@@ -239,6 +108,76 @@ func PartTwo() {
 	//location := <-locChannel
 
 	fmt.Println("Part 2 closest location: ", location)
+}
+
+func BuildStructs(inFileName string) {
+	file, err := os.Open(inFileName)
+
+	var fileLocation string
+
+	if err != nil {
+		fmt.Println("Error opening file")
+		os.Exit(0)
+	}
+
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+
+	for scanner.Scan() {
+		curLine := scanner.Text()
+		if len(curLine) > 0 {
+			if strings.Contains(curLine, "seeds") {
+				seeds.SeedNum = GetSeedNums(scanner.Text())
+				seedRanges = GetSeedRanges(scanner.Text())
+			}
+			if strings.Contains(curLine, constSeedtoSoil) {
+				fileLocation = constSeedtoSoil
+				continue
+			}
+			if strings.Contains(curLine, constSoiltoFertilizer) {
+				fileLocation = constSoiltoFertilizer
+				continue
+			}
+			if strings.Contains(curLine, constFertilizertoWater) {
+				fileLocation = constFertilizertoWater
+				continue
+			}
+			if strings.Contains(curLine, constWatertoLight) {
+				fileLocation = constWatertoLight
+				continue
+			}
+			if strings.Contains(curLine, constLighttoTemp) {
+				fileLocation = constLighttoTemp
+				continue
+			}
+			if strings.Contains(curLine, constTemptoHumidity) {
+				fileLocation = constTemptoHumidity
+				continue
+			}
+			if strings.Contains(curLine, constHumiditytoLoc) {
+				fileLocation = constHumiditytoLoc
+				continue
+			}
+
+			switch fileLocation {
+			case constSeedtoSoil:
+				seedtoSoil = append(seedtoSoil, ParseRange(curLine))
+			case constSoiltoFertilizer:
+				soiltoFertilizer = append(soiltoFertilizer, ParseRange(curLine))
+			case constFertilizertoWater:
+				fertilizertoWater = append(fertilizertoWater, ParseRange(curLine))
+			case constWatertoLight:
+				watertoLight = append(watertoLight, ParseRange(curLine))
+			case constLighttoTemp:
+				lighttoTemp = append(lighttoTemp, ParseRange(curLine))
+			case constTemptoHumidity:
+				temptoHumidity = append(temptoHumidity, ParseRange(curLine))
+			case constHumiditytoLoc:
+				humiditytoLocation = append(humiditytoLocation, ParseRange(curLine))
+			}
+		}
+	}
 }
 
 func GetSeedNums(inStr string) []int {
