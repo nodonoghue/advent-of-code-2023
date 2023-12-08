@@ -78,7 +78,6 @@ func PartTwo() {
 	var location int = 0
 	groupNum := 1
 
-	fmt.Println("Number of Iterations (rough): ", (405592018 + 27782252 + 61862174 + 181169206 + 138786487 + 275299008 + 478003391 + 6102091 + 15491453 + 546191739))
 	for _, curSeedRange := range seedRanges {
 		//go GetLocation(curSeedRange, seedtoSoil, soiltoFertilizer, fertilizertoWater, watertoLight, lighttoTemp, temptoHumidity, humiditytoLocation, locChannel)
 		//wg.Add(1)
