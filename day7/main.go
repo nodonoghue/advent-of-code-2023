@@ -45,6 +45,24 @@ var CardScore = func() map[string]int {
 	}
 }
 
+var WildCardScore = func() map[string]int {
+	return map[string]int{
+		"2": 2,
+		"3": 3,
+		"4": 4,
+		"5": 5,
+		"6": 6,
+		"7": 7,
+		"8": 8,
+		"9": 9,
+		"T": 10,
+		"J": 1,
+		"Q": 12,
+		"K": 13,
+		"A": 14,
+	}
+}
+
 var HandScore = func() map[string]int {
 	return map[string]int{
 		"HighCard":     0,
@@ -151,10 +169,10 @@ func PartTwo(hands []Hand) {
 		if calculatedHands[i].Rank == calculatedHands[j].Rank {
 			//walk the cards in each hand to see when one has a higher card
 			for index := range calculatedHands[i].Cards {
-				if CardScore()[calculatedHands[i].Cards[index]] == CardScore()[calculatedHands[j].Cards[index]] {
+				if WildCardScore()[calculatedHands[i].Cards[index]] == WildCardScore()[calculatedHands[j].Cards[index]] {
 					continue
 				} else {
-					returnObj = CardScore()[calculatedHands[i].Cards[index]] < CardScore()[calculatedHands[j].Cards[index]]
+					returnObj = WildCardScore()[calculatedHands[i].Cards[index]] < WildCardScore()[calculatedHands[j].Cards[index]]
 					break
 				}
 			}
@@ -165,8 +183,13 @@ func PartTwo(hands []Hand) {
 		return returnObj
 	})
 
+	for _, hand := range calculatedHands {
+		fmt.Println(hand)
+	}
+
 	answer = CalculateTotalScore(calculatedHands)
 	fmt.Println("Answer: ", answer)
+	fmt.Println("Corract answer: 250057090")
 }
 
 func CalculateHandScore(hand Hand, hasWilds bool) Hand {
@@ -267,29 +290,35 @@ func CalculateHandTypeWild(cards []string) HandRank {
 	for card, count := range cardDict {
 		switch count {
 		case 1:
-			groups = append(groups, GroupScore{card, count, CardScore()[card]})
+			groups = append(groups, GroupScore{card, count, WildCardScore()[card]})
 		case 2:
-			groups = append(groups, GroupScore{card, count, 2 * CardScore()[card]})
+			groups = append(groups, GroupScore{card, count, 2 * WildCardScore()[card]})
 		case 3:
-			groups = append(groups, GroupScore{card, count, 3 * CardScore()[card]})
+			groups = append(groups, GroupScore{card, count, 3 * WildCardScore()[card]})
 		case 4:
-			groups = append(groups, GroupScore{card, count, 4 * CardScore()[card]})
+			groups = append(groups, GroupScore{card, count, 4 * WildCardScore()[card]})
 		case 5:
-			groups = append(groups, GroupScore{card, count, 5 * CardScore()[card]})
+			groups = append(groups, GroupScore{card, count, 5 * WildCardScore()[card]})
 		}
 	}
 
 	sort.Slice(groups, func(i int, j int) bool {
-		return groups[i].Score > groups[j].Score
+		var returnObj bool
+		if groups[i].Count == groups[j].Count {
+			returnObj = groups[i].Score > groups[j].Score
+		} else {
+			returnObj = groups[i].Count > groups[j].Count
+		}
+		return returnObj
 	})
 
-	if (wildCount > 0 && wildCount < 5) && len(groups) > 0 {
+	if wildCount == 5 {
+		groups = append(groups, GroupScore{"J", 5, 5 * WildCardScore()["J"]})
+	} else if (wildCount > 0 && wildCount < 5) && len(groups) > 0 {
 		groups[0].Count += wildCount
 		groups[0].Score = groups[0].Count * CardScore()[groups[0].Card]
 	} else if wildCount > 0 && len(groups) == 0 {
-		groups = append(groups, GroupScore{cards[0], 2, 2 * CardScore()[cards[0]]})
-	} else if wildCount == 5 {
-		groups = append(groups, GroupScore{"A", 5, 5 * CardScore()["A"]})
+		groups = append(groups, GroupScore{cards[0], 2, 2 * WildCardScore()[cards[0]]})
 	}
 
 	for _, group := range groups {
