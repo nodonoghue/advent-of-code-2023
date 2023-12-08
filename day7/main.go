@@ -287,7 +287,7 @@ func CalculateHandTypeWild(cards []string) HandRank {
 		groups[0].Count += wildCount
 		groups[0].Score = groups[0].Count * CardScore()[groups[0].Card]
 	} else if wildCount > 0 && len(groups) == 0 {
-		//groups = append(groups, GroupScore{cards[0], 2, 2 * CardScore()[cards[0]]})
+		groups = append(groups, GroupScore{cards[0], 2, 2 * CardScore()[cards[0]]})
 	} else if wildCount == 5 {
 		groups = append(groups, GroupScore{"A", 5, 5 * CardScore()["A"]})
 	}
