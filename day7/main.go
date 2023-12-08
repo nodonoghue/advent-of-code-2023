@@ -10,15 +10,21 @@ import (
 )
 
 type Hand struct {
-	Cards      []string
-	Wager      int
-	Rank       int
-	RankSource map[string]int
+	Cards     []string
+	Wager     int
+	Rank      int
+	CardScore int
 }
 
 type HandRank struct {
-	Rank       int
-	RankSource map[string]int
+	Rank      int
+	RankScore int
+}
+
+type GroupScore struct {
+	Card  string
+	Count int
+	Score int
 }
 
 var CardScore = func() map[string]int {
@@ -53,7 +59,7 @@ var HandScore = func() map[string]int {
 
 func main() {
 	fmt.Println("Advent of code 2023: Day7")
-	hands := GetInputs("test.txt")
+	hands := GetInputs("inputs.txt")
 	PartOne(hands)
 }
 
@@ -127,21 +133,21 @@ func PartOne(hands []Hand) {
 		return returnObj
 	})
 
-	for _, curHand := range calculatedHands {
-		fmt.Println(curHand)
-	}
-
 	answer = CalculateTotalScore(calculatedHands)
 	fmt.Println("Answer: ", answer)
+}
+
+func PartTwo(hands []Hand) {
+	fmt.Println("Starting Part Two")
+
 }
 
 func CalculateHandScore(hand Hand) Hand {
 	var returnObj Hand
 
 	rankObj := CalculateHandType(hand.Cards)
-	fmt.Println(rankObj)
 	returnObj.Rank = rankObj.Rank
-	returnObj.RankSource = rankObj.RankSource
+	returnObj.CardScore = rankObj.RankScore
 	returnObj.Wager = hand.Wager
 	returnObj.Cards = hand.Cards
 
@@ -162,25 +168,22 @@ func CalculateHandType(cards []string) HandRank {
 		cardDict[card]++
 	}
 
-	rankSource := make(map[string]int)
 	for card, count := range cardDict {
 		switch count {
 		case 2:
-			rankSource[card] = 2
+			returnObj.RankScore += 2 * CardScore()[card]
 			countPair++
 		case 3:
-			rankSource[card] = 3
+			returnObj.RankScore += 3 * CardScore()[card]
 			countTriple++
 		case 4:
-			rankSource[card] = 4
+			returnObj.RankScore += 4 * CardScore()[card]
 			countQuad++
 		case 5:
-			rankSource[card] = 5
+			returnObj.RankScore += 5 * CardScore()[card]
 			countQuint++
 		}
 	}
-	fmt.Println(cards)
-	fmt.Println(rankSource)
 
 	if countPair == 1 {
 		returnObj.Rank = HandScore()["OnePair"]
@@ -205,6 +208,13 @@ func CalculateHandType(cards []string) HandRank {
 	}
 
 	return returnObj
+}
+
+func CalculateHandTypeWild(cards []string) HandRank {
+	//J cards are wild, need to remove the J cards, then count the numver of each card
+	// find the highest scoring group and add all Js to it to make the best possible hand
+	// How to handle Full house?  if a Hand has 2 pairs and 1 J, add a J to the highest scoring
+	// group
 }
 
 func CalculateTotalScore(hands []Hand) int {
