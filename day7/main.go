@@ -10,27 +10,32 @@ import (
 )
 
 type Hand struct {
-	Cards    []string
-	Wager    int
-	Strength int
-	Rank     int
+	Cards      []string
+	Wager      int
+	Rank       int
+	RankSource map[string]int
+}
+
+type HandRank struct {
+	Rank       int
+	RankSource map[string]int
 }
 
 var CardScore = func() map[string]int {
 	return map[string]int{
-		"2": 0,
-		"3": 1,
-		"4": 2,
-		"5": 3,
-		"6": 4,
-		"7": 5,
-		"8": 6,
-		"9": 7,
-		"T": 8,
-		"J": 9,
-		"Q": 10,
-		"K": 11,
-		"A": 12,
+		"2": 2,
+		"3": 3,
+		"4": 4,
+		"5": 5,
+		"6": 6,
+		"7": 7,
+		"8": 8,
+		"9": 9,
+		"T": 10,
+		"J": 11,
+		"Q": 12,
+		"K": 13,
+		"A": 14,
 	}
 }
 
@@ -48,7 +53,7 @@ var HandScore = func() map[string]int {
 
 func main() {
 	fmt.Println("Advent of code 2023: Day7")
-	hands := GetInputs("inputs.txt")
+	hands := GetInputs("test.txt")
 	PartOne(hands)
 }
 
@@ -105,7 +110,7 @@ func PartOne(hands []Hand) {
 	}
 	sort.Slice(calculatedHands, func(i, j int) bool {
 		var returnObj bool
-		if calculatedHands[i].Strength == calculatedHands[j].Strength {
+		if calculatedHands[i].Rank == calculatedHands[j].Rank {
 			//walk the cards in each hand to see when one has a higher card
 			for index := range calculatedHands[i].Cards {
 				if CardScore()[calculatedHands[i].Cards[index]] == CardScore()[calculatedHands[j].Cards[index]] {
@@ -116,7 +121,7 @@ func PartOne(hands []Hand) {
 				}
 			}
 		} else {
-			returnObj = calculatedHands[i].Strength < calculatedHands[j].Strength
+			returnObj = calculatedHands[i].Rank < calculatedHands[j].Rank
 		}
 
 		return returnObj
@@ -132,13 +137,21 @@ func PartOne(hands []Hand) {
 
 func CalculateHandScore(hand Hand) Hand {
 	var returnObj Hand
-	returnObj.Strength = CalculateHandType(hand.Cards)
+
+	rankObj := CalculateHandType(hand.Cards)
+	fmt.Println(rankObj)
+	returnObj.Rank = rankObj.Rank
+	returnObj.RankSource = rankObj.RankSource
 	returnObj.Wager = hand.Wager
 	returnObj.Cards = hand.Cards
+
 	return returnObj
 }
 
-func CalculateHandType(cards []string) int {
+func CalculateHandType(cards []string) HandRank {
+	var returnObj HandRank
+	//Need to add variations to the ranks based on which cards are in each group.
+	// 4 Ts should never be ranked about 4 Ks
 	countPair := 0
 	countTriple := 0
 	countQuad := 0
@@ -149,40 +162,49 @@ func CalculateHandType(cards []string) int {
 		cardDict[card]++
 	}
 
-	for _, count := range cardDict {
+	rankSource := make(map[string]int)
+	for card, count := range cardDict {
 		switch count {
 		case 2:
+			rankSource[card] = 2
 			countPair++
 		case 3:
+			rankSource[card] = 3
 			countTriple++
 		case 4:
+			rankSource[card] = 4
 			countQuad++
 		case 5:
+			rankSource[card] = 5
 			countQuint++
 		}
 	}
+	fmt.Println(cards)
+	fmt.Println(rankSource)
 
 	if countPair == 1 {
-		return HandScore()["OnePair"]
+		returnObj.Rank = HandScore()["OnePair"]
 	}
 	if countPair == 2 {
-		return HandScore()["TwoPair"]
+		returnObj.Rank = HandScore()["TwoPair"]
 	}
 	if countTriple == 1 && countPair == 0 {
-		return HandScore()["ThreeOfAKind"]
+		returnObj.Rank = HandScore()["ThreeOfAKind"]
 	}
 	if countTriple == 1 && countPair == 1 {
-		return HandScore()["FullHouse"]
+		returnObj.Rank = HandScore()["FullHouse"]
 	}
 	if countQuad == 1 {
-		return HandScore()["FourOfAKind"]
+		returnObj.Rank = HandScore()["FourOfAKind"]
 	}
 	if countQuint == 1 {
-		return HandScore()["FiveOfAKind"]
-	} else {
-		return HandScore()["HighCard"]
+		returnObj.Rank = HandScore()["FiveOfAKind"]
+	}
+	if countPair == 0 && countTriple == 0 && countQuad == 0 && countQuint == 0 {
+		returnObj.Rank = HandScore()["HighCard"]
 	}
 
+	return returnObj
 }
 
 func CalculateTotalScore(hands []Hand) int {
