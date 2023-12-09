@@ -123,7 +123,7 @@ func main() {
 	fmt.Println("Advent of code 2023 day 8")
 	desertMap := GetInputs("inputs.txt")
 
-	//PartOne(desertMap)
+	PartOne(desertMap)
 	PartTwo(desertMap)
 }
 
