@@ -97,6 +97,7 @@ func MakeStep(direction string, currentNode string, nodes map[string]Node) strin
 	}
 }
 
+// Get the total steps needed for all inputs to reach the end
 func LeastCommonMultiple(a, b int, integers []int) int {
 	result := a * b / GreatestCommonDivisor(a, b)
 
@@ -107,6 +108,8 @@ func LeastCommonMultiple(a, b int, integers []int) int {
 	return result
 }
 
+// Get these for each set of factors to calculate the
+// least common multiple
 func GreatestCommonDivisor(a, b int) int {
 	for b != 0 {
 		t := b
