@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"container/list"
 	"fmt"
 	"os"
 	"strings"
@@ -28,6 +29,12 @@ type Directions struct {
 type Location struct {
 	X int
 	Y int
+}
+
+type VisitedLocaction struct {
+	X    int
+	Y    int
+	Step int
 }
 
 func GetInputs(fileName string) [][]string {
@@ -83,6 +90,32 @@ func FindStart(inputs [][]string) Location {
 	return returnObj
 }
 
+func RoughBFS(startLoc Location, grid [][]string) int {
+	var visited []VisitedLocaction
+	step := 0
+	//add the starting location to the visited array
+	visited = append(visited, VisitedLocaction{X: startLoc.X, Y: startLoc.Y, Step: step})
+	queue := list.New()
+
+	//Add surrounding cells to "S" to the queue
+	if startLoc.X > 0 {
+		queue.PushBack(Location{X: startLoc.X - 1, Y: startLoc.Y})
+	}
+	if startLoc.X < len(grid[0]) {
+		queue.PushBack(Location{X: startLoc.X + 1, Y: startLoc.Y})
+	}
+	if startLoc.Y > 0 {
+		queue.PushBack(Location{X: startLoc.X, Y: startLoc.Y - 1})
+	}
+	if startLoc.Y < len(grid) {
+		queue.PushBack(Location{X: startLoc.X, Y: startLoc.Y + 1})
+	}
+
+	for queue.Len() < 0 {
+		//pop off queue and search for a valid connector to the current location
+	}
+}
+
 func PartOne(inputs [][]string) {
 	fmt.Println("Starting part one")
 	for _, line := range inputs {
@@ -91,7 +124,15 @@ func PartOne(inputs [][]string) {
 	startLoc := FindStart(inputs)
 	fmt.Println(startLoc)
 
-	fmt.Println(inputs[startLoc.Y][startLoc.X])
+	//Need to navigate the pipe loop until start is found again, then divide by 2 to fined the answer?
+	//being mindful to take only steps that are legal with the current pipe symbol, particularly important
+	//from start where every direction is legal, but not every direction will be allows by the pieces next
+	//to it.
+
+	//Or should I learn how to and implement a breadth first search algorithm
+	//search outward from S like layers of an onion keep/visit matches and discard non-matches
+	//store visits using a struct that will also note the step in which it was found
+	//Need to know what to queue
 }
 
 func main() {
