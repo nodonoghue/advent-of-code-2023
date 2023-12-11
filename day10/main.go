@@ -90,11 +90,69 @@ func FindStart(inputs [][]string) Location {
 	return returnObj
 }
 
+func TracePath(startLoc Location, grid [][]string) int {
+	returnVal := 0
+	nextChar := ""
+	currentLoc := startLoc
+	currentChar := "S"
+
+	for nextChar != "S" {
+		if currentChar == "S" {
+			//check check around for pipes that would connect
+			if currentLoc.Y > 0 {
+				currentChar = grid[currentLoc.Y-1][currentLoc.X]
+				if currentChar == "|" || currentChar == "7" || currentChar == "F" {
+					currentLoc = Location{X: currentLoc.X, Y: currentLoc.Y - 1}
+					nextChar = currentChar
+					returnVal++
+					continue
+				}
+			}
+			if currentLoc.X < len(grid[0])-1 {
+				currentChar = grid[currentLoc.Y][currentLoc.X+1]
+				if currentChar == "-" || currentChar == "7" || currentChar == "J" {
+					currentLoc = Location{X: currentLoc.X + 1, Y: currentLoc.Y}
+					nextChar = currentChar
+					returnVal++
+					continue
+				}
+			}
+			if currentLoc.Y < len(grid)-1 {
+				currentChar = grid[currentLoc.Y+1][currentLoc.X]
+				if currentChar == "|" || currentChar == "J" || currentChar == "L" {
+					currentLoc = Location{X: currentLoc.X, Y: currentLoc.Y + 1}
+					nextChar = currentChar
+					returnVal++
+					continue
+				}
+			}
+			if currentLoc.X > 0 {
+				currentChar = grid[currentLoc.Y][currentLoc.X-1]
+				if currentChar == "-" || currentChar == "L" || currentChar == "F" {
+					currentLoc = Location{X: currentLoc.X, Y: currentLoc.Y - 1}
+					nextChar = currentChar
+					returnVal++
+					continue
+				}
+			}
+		}
+		switch currentChar {
+		case "-": //can move left or right
+		case "7": //can move left or down
+		case "|": //can move up or down
+		case "J": // canse move right or up
+		case "L": //can move right or up
+		}
+	}
+
+	return returnVal / 2
+}
+
 func RoughBFS(startLoc Location, grid [][]string) int {
 	var visited []VisitedLocaction
-	step := 0
+	steps := 0
 	//add the starting location to the visited array
-	visited = append(visited, VisitedLocaction{X: startLoc.X, Y: startLoc.Y, Step: step})
+	visited = append(visited, VisitedLocaction{X: startLoc.X, Y: startLoc.Y, Step: steps})
 	queue := list.New()
 
 	//Add surrounding cells to "S" to the queue
@@ -113,7 +171,10 @@ func RoughBFS(startLoc Location, grid [][]string) int {
 
 	for queue.Len() < 0 {
 		//pop off queue and search for a valid connector to the current location
+
 	}
+
+	return steps
 }
 
 func PartOne(inputs [][]string) {
@@ -123,6 +184,9 @@ func PartOne(inputs [][]string) {
 	}
 	startLoc := FindStart(inputs)
 	fmt.Println(startLoc)
+
+	answer := TracePath(startLoc, inputs)
+	fmt.Println("Answer ", answer)
 
 	//Need to navigate the pipe loop until start is found again, then divide by 2 to fined the answer?
 	//being mindful to take only steps that are legal with the current pipe symbol, particularly important
