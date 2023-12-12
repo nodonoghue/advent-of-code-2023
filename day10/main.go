@@ -95,14 +95,17 @@ func TracePath(startLoc Location, grid [][]string) int {
 	nextChar := ""
 	currentLoc := startLoc
 	currentChar := "S"
+	var previousLoc Location
 
 	for nextChar != "S" {
+		fmt.Println(currentChar)
 		if currentChar == "S" {
 			//check check around for pipes that would connect
 			if currentLoc.Y > 0 {
 				currentChar = grid[currentLoc.Y-1][currentLoc.X]
 				if currentChar == "|" || currentChar == "7" || currentChar == "F" {
 					currentLoc = Location{X: currentLoc.X, Y: currentLoc.Y - 1}
+					previousLoc = startLoc
 					nextChar = currentChar
 					returnVal++
 					continue
@@ -113,6 +116,7 @@ func TracePath(startLoc Location, grid [][]string) int {
 				if currentChar == "-" || currentChar == "7" || currentChar == "J" {
 					currentLoc = Location{X: currentLoc.X + 1, Y: currentLoc.Y}
 					nextChar = currentChar
+					previousLoc = startLoc
 					returnVal++
 					continue
 				}
@@ -121,6 +125,7 @@ func TracePath(startLoc Location, grid [][]string) int {
 				currentChar = grid[currentLoc.Y+1][currentLoc.X]
 				if currentChar == "|" || currentChar == "J" || currentChar == "L" {
 					currentLoc = Location{X: currentLoc.X, Y: currentLoc.Y + 1}
+					previousLoc = startLoc
 					nextChar = currentChar
 					returnVal++
 					continue
@@ -130,6 +135,7 @@ func TracePath(startLoc Location, grid [][]string) int {
 				currentChar = grid[currentLoc.Y][currentLoc.X-1]
 				if currentChar == "-" || currentChar == "L" || currentChar == "F" {
 					currentLoc = Location{X: currentLoc.X, Y: currentLoc.Y - 1}
+					previousLoc = startLoc
 					nextChar = currentChar
 					returnVal++
 					continue
@@ -138,11 +144,123 @@ func TracePath(startLoc Location, grid [][]string) int {
 		}
 		switch currentChar {
 		case "-": //can move left or right
+			if currentLoc.X > previousLoc.X {
+				//move right
+				currentChar = grid[currentLoc.Y][currentLoc.X+1]
+				previousLoc = currentLoc
+				currentLoc = Location{X: currentLoc.X + 1, Y: currentLoc.Y}
+				nextChar = currentChar
+				returnVal++
+				continue
+			}
+			if currentLoc.X < previousLoc.X {
+				//move left
+				currentChar = grid[currentLoc.Y][currentLoc.X-1]
+				previousLoc = currentLoc
+				currentLoc = Location{X: currentLoc.X - 1, Y: currentLoc.Y}
+				nextChar = currentChar
+				returnVal++
+				continue
+			}
 		case "7": //can move left or down
+			if currentLoc.X > previousLoc.X {
+				//move down
+				currentChar = grid[currentLoc.Y+1][currentLoc.X]
+				previousLoc = currentLoc
+				currentLoc = Location{X: currentLoc.X, Y: currentLoc.Y + 1}
+				nextChar = currentChar
+				returnVal++
+				continue
+			}
+			if currentLoc.Y < previousLoc.Y {
+				//move left
+				currentChar = grid[currentLoc.Y][currentLoc.X-1]
+				previousLoc = currentLoc
+				currentLoc = Location{X: currentLoc.X - 1, Y: currentLoc.Y}
+				nextChar = currentChar
+				returnVal++
+				continue
+			}
 		case "|": //can move up or down
+			if currentLoc.Y < previousLoc.Y {
+				//move up
+				currentChar = grid[currentLoc.Y-1][currentLoc.X]
+				previousLoc = currentLoc
+				currentLoc = Location{X: currentLoc.X, Y: currentLoc.Y - 1}
+				nextChar = currentChar
+				returnVal++
+				continue
+			}
+			if currentLoc.Y > previousLoc.Y {
+				//move down
+				currentChar = grid[currentLoc.Y+1][currentLoc.X]
+				previousLoc = currentLoc
+				currentLoc = Location{X: currentLoc.X, Y: currentLoc.Y + 1}
+				nextChar = currentChar
+				returnVal++
+				continue
+			}
 		case "J": // canse move right or up
+			if currentLoc.Y > previousLoc.Y {
+				//move left
+				currentChar = grid[currentLoc.Y][currentLoc.X-1]
+				previousLoc = currentLoc
+				currentLoc = Location{X: currentLoc.X - 1, Y: currentLoc.Y}
+				nextChar = currentChar
+				returnVal++
+				continue
+			}
+			if currentLoc.X > previousLoc.X {
+				//move up
+				currentChar = grid[currentLoc.Y-1][currentLoc.X]
+				previousLoc = currentLoc
+				currentLoc = Location{X: currentLoc.X, Y: currentLoc.Y - 1}
+				nextChar = currentChar
+				returnVal++
+				continue
+			}
 		case "L": //can move right or up
+			if currentLoc.Y > previousLoc.Y {
+				//move right
+				currentChar = grid[currentLoc.Y][currentLoc.X+1]
+				previousLoc = currentLoc
+				currentLoc = Location{X: currentLoc.X + 1, Y: currentLoc.Y}
+				nextChar = currentChar
+				returnVal++
+				continue
+			}
+			if currentLoc.X < previousLoc.X {
+				//move up
+				currentChar = grid[currentLoc.Y-1][currentLoc.X]
+				previousLoc = currentLoc
+				currentLoc = Location{X: currentLoc.X, Y: currentLoc.Y - 1}
+				nextChar = currentChar
+				returnVal++
+				continue
+			}
+		case "F":
+			if currentLoc.X < previousLoc.X {
+				//move down
+				currentChar = grid[currentLoc.Y+1][currentLoc.X]
+				previousLoc = currentLoc
+				currentLoc = Location{X: currentLoc.X, Y: currentLoc.Y + 1}
+				nextChar = currentChar
+				returnVal++
+				continue
+			}
+			if currentLoc.Y < previousLoc.Y {
+				//move right
+				currentChar = grid[currentLoc.Y][currentLoc.X+1]
+				previousLoc = currentLoc
+				currentLoc = Location{X: currentLoc.X + 1, Y: currentLoc.Y}
+				nextChar = currentChar
+				returnVal++
+				continue
+			}
+		default:
+			nextChar = "S"
 		}
+
 	}
 
 	return returnVal / 2
@@ -171,7 +289,9 @@ func RoughBFS(startLoc Location, grid [][]string) int {
 
 	for queue.Len() < 0 {
 		//pop off queue and search for a valid connector to the current location
+		thing := queue.Front()
 
+		fmt.Println(thing.Value.(*Location))
 	}
 
 	return steps
@@ -179,9 +299,6 @@ func RoughBFS(startLoc Location, grid [][]string) int {
 
 func PartOne(inputs [][]string) {
 	fmt.Println("Starting part one")
-	for _, line := range inputs {
-		fmt.Println(line)
-	}
 	startLoc := FindStart(inputs)
 	fmt.Println(startLoc)
 
@@ -191,7 +308,7 @@ func PartOne(inputs [][]string) {
 	//Need to navigate the pipe loop until start is found again, then divide by 2 to fined the answer?
 	//being mindful to take only steps that are legal with the current pipe symbol, particularly important
 	//from start where every direction is legal, but not every direction will be allows by the pieces next
-	//to it.
+	//to it.  --Solved it initially like this.  Will refactor to learn BFS algorithms
 
 	//Or should I learn how to and implement a breadth first search algorithm
 	//search outward from S like layers of an onion keep/visit matches and discard non-matches
@@ -199,9 +316,19 @@ func PartOne(inputs [][]string) {
 	//Need to know what to queue
 }
 
+func PartTwo(inputs [][]string) {
+	fmt.Println("Starting part two")
+
+	//I really have no idea how to tackle this part.  Need to do some research into what algorithms would work.
+	//or figure out a way to brute force the answer out.
+
+	//Maybe storing a map of the nodes that make up the outline of the circuit and figuring out a way to scan
+	//down the rows and have an understanding of when inside the lines....  but how?
+}
+
 func main() {
 	fmt.Println("Advent of Code: Day 10")
-	inputs := GetInputs("test.txt")
+	inputs := GetInputs("inputs.txt")
 	PartOne(inputs)
 }
 
