@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"math"
 	"os"
 	"strings"
 )
@@ -53,7 +54,6 @@ func ParseLines(fileLines []string) [][]string {
 
 func ExpandGrid(grid [][]string, expansionSize int) [][]string {
 	var returnObj [][]string
-
 	rowMap := FindEmptyRows(grid)
 	colMap := FindEmptyColumns(grid)
 
@@ -79,7 +79,6 @@ func ExpandGrid(grid [][]string, expansionSize int) [][]string {
 		}
 		returnObj = append(returnObj, newRow)
 	}
-
 	return returnObj
 }
 
@@ -135,28 +134,103 @@ func FindGalaxies(grid [][]string) []Point {
 	return returnObj
 }
 
-func FindDistances(grid [][]string, galaxies []Point) {
+func FindDistances(grid [][]string, galaxies []Point) int {
 	//Don't actually need to find a pair here, just need to
 	//loop staring from the first galaxy, checking the diff
 	//of both the x and y of all others, then to the next
 	//iteration where the first item is ignore, and so on...
+	totalDistance := 0
+	for i := 0; i < len(galaxies); i++ {
+		for j := i + 1; j < len(galaxies); j++ {
+			//calc distance and get abs and sum
+			firstPoint := galaxies[i]
+			secondPoint := galaxies[j]
+
+			distance := int(math.Abs(float64(firstPoint.x)-float64(secondPoint.x))) + int(math.Abs(float64(firstPoint.y)-float64(secondPoint.y)))
+			totalDistance += distance
+		}
+	}
+	return totalDistance
+}
+
+func FindDistancesPartTwo(colMap map[int]bool, rowMap map[int]bool, galaxies []Point, expansion int) int {
+	totalDistance := 0
+
+	for i := 0; i < len(galaxies); i++ {
+		for j := i + 1; j < len(galaxies); j++ {
+			//calc distance and get abs and sum
+			firstPoint := galaxies[i]
+			secondPoint := galaxies[j]
+
+			if firstPoint.y > secondPoint.y {
+				//iterate backwards from secondPoint.y to firstPoint.y indexes, if these cross an empty row, add 1mil for each
+				for rowi := firstPoint.y; rowi >= secondPoint.y; rowi-- {
+					if rowMap[rowi] {
+						totalDistance += expansion
+					}
+				}
+				totalDistance += firstPoint.y - secondPoint.y
+			} else {
+				for rowi := secondPoint.y; rowi >= firstPoint.y; rowi-- {
+					if rowMap[rowi] {
+						totalDistance += expansion
+					}
+				}
+				totalDistance += secondPoint.y - firstPoint.y
+			}
+
+			if firstPoint.x > secondPoint.x {
+				//iterate backwards from secondPoint.x to firstPoint.x indexes, for each emprty col this crosses add 1mil
+				for coli := firstPoint.x; coli >= secondPoint.x; coli-- {
+					if colMap[coli] {
+						totalDistance += expansion
+					}
+				}
+				totalDistance += firstPoint.x - secondPoint.x
+			} else {
+				//iterate backwards from firstPoint.x to secondPoint.x indexes, for each emprty col this crosses add 1mil
+				for coli := secondPoint.x; coli >= firstPoint.x; coli-- {
+					if colMap[coli] {
+						totalDistance += expansion
+					}
+				}
+				totalDistance += secondPoint.x - firstPoint.x
+			}
+
+			//totalDistance += int(math.Abs(float64(firstPoint.x)-float64(secondPoint.x))) + int(math.Abs(float64(firstPoint.y)-float64(secondPoint.y)))
+		}
+	}
+
+	return totalDistance
+}
+
+func GetExpansionMaps(grid [][]string) (map[int]bool, map[int]bool) {
+	colMap := FindEmptyColumns(grid)
+	rowMap := FindEmptyRows(grid)
+	return rowMap, colMap
 }
 
 func main() {
 	fmt.Println("Advent of Code 2023: Day 11")
 	grid := GetInputs("test.txt")
 	PartOne(grid)
+	PartTwo(grid)
 }
 
 func PartOne(grid [][]string) {
 	fmt.Println("Starting part one")
 	expandedGrid := ExpandGrid(grid, 1)
 	galaxyLocations := FindGalaxies(expandedGrid)
-
-	fmt.Println(galaxyLocations)
-
+	answer := FindDistances(expandedGrid, galaxyLocations)
+	fmt.Println(answer)
 }
 
-func PartTwo() {
+func PartTwo(grid [][]string) {
 	fmt.Println("Starting part two")
+
+	rowMap, colMap := GetExpansionMaps(grid)
+	galaxies := FindGalaxies(grid)
+	answer := FindDistancesPartTwo(colMap, rowMap, galaxies, 100)
+
+	fmt.Println("Part two answer: ", answer)
 }
