@@ -212,7 +212,7 @@ func GetExpansionMaps(grid [][]string) (map[int]bool, map[int]bool) {
 
 func main() {
 	fmt.Println("Advent of Code 2023: Day 11")
-	grid := GetInputs("test.txt")
+	grid := GetInputs("inputs.txt")
 	PartOne(grid)
 	PartTwo(grid)
 }
@@ -230,7 +230,7 @@ func PartTwo(grid [][]string) {
 
 	rowMap, colMap := GetExpansionMaps(grid)
 	galaxies := FindGalaxies(grid)
-	answer := FindDistancesPartTwo(colMap, rowMap, galaxies, 100)
+	answer := FindDistancesPartTwo(colMap, rowMap, galaxies, 999999)
 
 	fmt.Println("Part two answer: ", answer)
 }
