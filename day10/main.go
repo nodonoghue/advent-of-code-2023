@@ -98,7 +98,6 @@ func TracePath(startLoc Location, grid [][]string) int {
 	var previousLoc Location
 
 	for nextChar != "S" {
-		fmt.Println(currentChar)
 		if currentChar == "S" {
 			//check check around for pipes that would connect
 			if currentLoc.Y > 0 {
@@ -300,7 +299,6 @@ func RoughBFS(startLoc Location, grid [][]string) int {
 func PartOne(inputs [][]string) {
 	fmt.Println("Starting part one")
 	startLoc := FindStart(inputs)
-	fmt.Println(startLoc)
 
 	answer := TracePath(startLoc, inputs)
 	fmt.Println("Answer ", answer)
