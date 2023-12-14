@@ -196,9 +196,7 @@ func FindDistancesPartTwo(colMap map[int]bool, rowMap map[int]bool, galaxies []P
 				}
 				totalDistance += secondPoint.x - firstPoint.x
 			}
-
-			//totalDistance += int(math.Abs(float64(firstPoint.x)-float64(secondPoint.x))) + int(math.Abs(float64(firstPoint.y)-float64(secondPoint.y)))
-		}
+ 		}
 	}
 
 	return totalDistance

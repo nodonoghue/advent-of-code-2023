@@ -10,4 +10,6 @@
 
 - Possible to start at index 1 instead of 0 if the rows are odd since outter rows and cols that don't exactly match are ignored, skipping the first of a reflection won't change the point of reflection.  The point of reflection is the important find.
 
-- Part two will change the condition to find 
+- Part two will change the condition to find mirroring sections that have exactly one error.
+
+- validation regex: `#{1}/*.+/*#{5}/*.+/*#{1}/*.+/*#{1}/*.+/*#{1}`
