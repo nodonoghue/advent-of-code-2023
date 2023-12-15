@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -64,25 +65,114 @@ func ParseLines(fileLines []string) []SpringRow {
 	return returnObj
 }
 
-func IsValid(line string) bool {
+func ProcessLine(currentRow SpringRow) int {
+	replaceMap, bools := SplitUnknowns(currentRow.row)
+	regexpstr := BuildRegExpString(currentRow.pattern)
+	permutations := GetPermutations(bools)
+	count := 0
+
+	for _, permutation := range permutations {
+		//put the string back together from the bool array
+		reconstructed := ReconstructString(currentRow.row, permutation, replaceMap)
+
+		//get a count of validations
+		if IsValid(reconstructed, regexpstr) {
+			count++
+		}
+	}
+
+	return count
+}
+
+func GetPermutations(bools []bool) [][]bool {
+	var result [][]bool
+	n := len(bools)
+
+	var permutate func(int)
+	permutate = func(index int) {
+		if index == n {
+			permutationCopy := make([]bool, n)
+			copy(permutationCopy, bools)
+			result = append(result, permutationCopy)
+			return
+		}
+
+		bools[index] = true
+		permutate(index + 1)
+
+		bools[index] = false
+		permutate(index + 1)
+	}
+
+	permutate(0)
+	return result
+}
+
+func ReconstructString(linestr string, bools []bool, replaceMap map[int]bool) string {
+	slice := strings.Split(linestr, "")
+	boolIndex := 0
+
+	for index := range slice {
+		if _, isOk := replaceMap[index]; isOk {
+			if bools[boolIndex] {
+				slice[boolIndex] = "#"
+			} else {
+				slice[boolIndex] = "."
+			}
+			boolIndex++
+		}
+	}
+
+	return strings.Join(slice, "")
+}
+
+func SplitUnknowns(row string) (map[int]bool, []bool) {
+	unknownMap := make(map[int]bool)
+	var boolSlc []bool
+
+	slcRow := strings.Split(row, "")
+
+	for index, value := range slcRow {
+		if value == "?" {
+			unknownMap[index] = false
+			boolSlc = append(boolSlc, false)
+		}
+	}
+
+	return unknownMap, boolSlc
+}
+
+func IsValid(line string, regexpstr string) bool {
 	isValid := false
-
-	//How do I check against the pattern here?
-	//Regex use?  How do I make a regEx to test 1, 1, 3 with any number of spaces between each group?
-
+	regEx, _ := regexp.Compile(regexpstr)
+	isValid = regEx.MatchString(line)
 	return isValid
+}
+
+func BuildRegExpString(pattern []int) string {
+	var returnVal string
+	patternLen := len(pattern)
+
+	for i := 0; i < patternLen; i++ {
+		returnVal = returnVal + "#{" + strconv.FormatInt(int64(pattern[i]), 10) + "}"
+		if i < (patternLen - 1) {
+			returnVal = returnVal + "/*.+/*"
+		}
+	}
+
+	return returnVal
 }
 
 func PartOne(inputs []SpringRow) {
 	fmt.Println("Starting part one")
-	//General idea is to splut out the "?" from the rest of the string, map back to the index in the original string
-	//make an array of bool the same length, permutate over the bool array.  For each permutation check if valid by
-	//using the following regex:
+
+	for _, val := range inputs {
+		ProcessLine(val)
+	}
 }
 
 func main() {
 	fmt.Println("Advent of Code 2023: Day 12")
 	inputs := GetInputs("test.txt")
-
-	fmt.Println(inputs)
+	PartOne(inputs)
 }
