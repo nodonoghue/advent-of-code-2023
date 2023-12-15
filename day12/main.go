@@ -75,8 +75,9 @@ func IsValid(line string) bool {
 
 func PartOne(inputs []SpringRow) {
 	fmt.Println("Starting part one")
-	//honestly, I have no idea how to do this pattern matching, this will be a lot of poking around blind to see what works.
-	//brute force and try every permutation of "#" or "." for each "?" character
+	//General idea is to splut out the "?" from the rest of the string, map back to the index in the original string
+	//make an array of bool the same length, permutate over the bool array.  For each permutation check if valid by
+	//using the following regex:
 }
 
 func main() {
