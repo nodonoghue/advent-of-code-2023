@@ -115,9 +115,9 @@ func ReconstructString(linestr string, bools []bool, replaceMap map[int]bool) st
 	for index := range slice {
 		if _, isOk := replaceMap[index]; isOk {
 			if bools[boolIndex] {
-				slice[boolIndex] = "#"
+				slice[index] = "#"
 			} else {
-				slice[boolIndex] = "."
+				slice[index] = "."
 			}
 			boolIndex++
 		}
@@ -150,29 +150,52 @@ func IsValid(line string, regexpstr string) bool {
 }
 
 func BuildRegExpString(pattern []int) string {
-	var returnVal string
+	returnVal := `^\.*`
 	patternLen := len(pattern)
-
+	//`^#{1}\.+#{1}\.+#{3}$`gm
 	for i := 0; i < patternLen; i++ {
-		returnVal = returnVal + "#{" + strconv.FormatInt(int64(pattern[i]), 10) + "}"
+		returnVal = returnVal + `#{` + strconv.FormatInt(int64(pattern[i]), 10) + `}`
 		if i < (patternLen - 1) {
-			returnVal = returnVal + "/*.+/*"
+			returnVal = returnVal + `\.+`
 		}
 	}
+	returnVal += `\.*$`
 
 	return returnVal
 }
 
+func IsValidBloated(line string, pattern []int) bool {
+	var regexpstr string
+	patternLen := len(pattern)
+	//`^#{1}\.+#{1}\.+#{3}$`gm
+	for i := 0; i < patternLen; i++ {
+		regexpstr = regexpstr + `^#{` + strconv.FormatInt(int64(pattern[i]), 10) + `}`
+		if i < (patternLen - 1) {
+			regexpstr = regexpstr + `\.+`
+		}
+	}
+	regexpstr += `$`
+
+	isValid := false
+	regEx, _ := regexp.Compile(regexpstr)
+	isValid = regEx.MatchString(line)
+	return isValid
+}
+
 func PartOne(inputs []SpringRow) {
 	fmt.Println("Starting part one")
+	answer := 0
 
 	for _, val := range inputs {
-		ProcessLine(val)
+		fmt.Println("Starting Line: ", val)
+		answer += ProcessLine(val)
 	}
+
+	fmt.Println("Part one answer: ", answer)
 }
 
 func main() {
 	fmt.Println("Advent of Code 2023: Day 12")
-	inputs := GetInputs("test.txt")
+	inputs := GetInputs("inputs.txt")
 	PartOne(inputs)
 }
