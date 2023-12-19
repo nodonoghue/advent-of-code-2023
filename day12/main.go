@@ -164,22 +164,26 @@ func BuildRegExpString(pattern []int) string {
 	return returnVal
 }
 
-func IsValidBloated(line string, pattern []int) bool {
-	var regexpstr string
-	patternLen := len(pattern)
-	//`^#{1}\.+#{1}\.+#{3}$`gm
-	for i := 0; i < patternLen; i++ {
-		regexpstr = regexpstr + `^#{` + strconv.FormatInt(int64(pattern[i]), 10) + `}`
-		if i < (patternLen - 1) {
-			regexpstr = regexpstr + `\.+`
+func UnfoldLine(line string) string {
+	newLine := line
+
+	for i := 1; i < 5; i++ {
+		newLine += "?" + line
+	}
+
+	return newLine
+}
+
+func UnfoldPattern(pattern []int) []int {
+	var newPattern []int
+
+	for i := 1; i <= 5; i++ {
+		for j := 0; j < len(pattern); j++ {
+			newPattern = append(newPattern, pattern[j])
 		}
 	}
-	regexpstr += `$`
 
-	isValid := false
-	regEx, _ := regexp.Compile(regexpstr)
-	isValid = regEx.MatchString(line)
-	return isValid
+	return newPattern
 }
 
 func PartOne(inputs []SpringRow) {
@@ -194,8 +198,28 @@ func PartOne(inputs []SpringRow) {
 	fmt.Println("Part one answer: ", answer)
 }
 
+func PartTwo(inputs []SpringRow) {
+	fmt.Println("Starting Part Two")
+
+	answer := 0
+
+	//Need to unfold the records, both line and pattern
+	//send each line through the same logic as above
+	//Will run very, very slowly....
+	for _, val := range inputs {
+		var newRow SpringRow
+		newRow.pattern = UnfoldPattern(val.pattern)
+		newRow.row = UnfoldLine(val.row)
+
+		fmt.Println("Starting Line: ", newRow)
+		answer += ProcessLine(newRow)
+	}
+
+}
+
 func main() {
 	fmt.Println("Advent of Code 2023: Day 12")
-	inputs := GetInputs("inputs.txt")
+	inputs := GetInputs("test.txt")
 	PartOne(inputs)
+	//PartTwo(inputs)
 }
