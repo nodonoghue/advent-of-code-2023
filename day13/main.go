@@ -59,12 +59,22 @@ func ParseLines(fileLines []string) map[int][][]string {
 
 func FindHorizontalMirror(grid [][]string) {
 	//use reflect.DeepEqual() to find the mirring, return index and count
+	//Can use deepEqual for multiple rows in the grid, go outside and work in to find the point of reflection
+	//What happens if the point of reflection is not in the middle?
+
+	//Maybe split the grid on the index point, meaning start at 1 instead of 0
+	//check if above and below match, make sure that both above and below are of equal length
+	//may need to step through every row of the grid.
+	endIndex := len(grid) - 1
+
+	for i := 1; i <= endIndex/2; i++ {
+
+	}
 }
 
 func FindVerticalMirror(grid [][]string) {
-	//Not entirely sure how to do this...
-	//Could rotate the grid and call FindHorizontalMirror()?
-	//Is there an algorithm to rotate the grid or do it the hard way and brute force it.
+	//Rotate the grid 90 clockwise then find the horizontal mirroring, will equal the column of mirroring
+	//How to rotate though?
 }
 
 func main() {
@@ -73,10 +83,18 @@ func main() {
 	s := "#.##..##."
 	s2 := "##....##."
 
-	slc1 := strings.Split(s, "")
-	slc2 := strings.Split(s2, "")
+	s3 := "#.##..##."
+	s4 := "##....##."
 
-	if reflect.DeepEqual(slc1, slc2) {
+	var grid1 [][]string
+	var grid2 [][]string
+
+	grid1 = append(grid1, strings.Split(s, ""))
+	grid1 = append(grid1, strings.Split(s2, ""))
+	grid2 = append(grid2, strings.Split(s3, ""))
+	grid2 = append(grid2, strings.Split(s4, ""))
+
+	if reflect.DeepEqual(grid1, grid2) {
 		fmt.Println("Equals")
 	} else {
 		fmt.Println("Not equal")
